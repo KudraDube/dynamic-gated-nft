@@ -1,7 +1,7 @@
 // Proxy contract address (deployed to Sepolia)
 export const PROXY_ADDRESS = "0xa8c732848b9860ecc6b6953c842f6e60b01fb483";
 
-export const SERVER_URL = "http://localhost:3001";
+export const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3001";
 
 export const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111 in hex
 
