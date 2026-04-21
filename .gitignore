@@ -1,0 +1,8 @@
+node_modules/
+lib/
+.env
+cache/
+out/
+docs/
+/broadcast/*/31337/
+/broadcast/**/dry-run/
