@@ -74,10 +74,6 @@ const TIERS = [
   },
 ];
 
-// ── In-memory nonce store (replay protection) ────────────────────────────────
-// Maps address -> Set of used nonces
-const usedNonces = new Map();
-
 // ── Routes ───────────────────────────────────────────────────────────────────
 
 // GET /metadata/:tier — returns NFT metadata JSON for a given tier (0–4)
@@ -107,17 +103,6 @@ app.post("/sign-visit", async (req, res) => {
     return res.status(400).json({ error: "Invalid or missing nonce (must be a number)" });
   }
 
-  // Replay protection — check if this nonce was already used for this address
-  const addrLower = address.toLowerCase();
-  if (!usedNonces.has(addrLower)) {
-    usedNonces.set(addrLower, new Set());
-  }
-
-  const nonceSet = usedNonces.get(addrLower);
-  if (nonceSet.has(nonce)) {
-    return res.status(409).json({ error: "Nonce already used. Each visit requires a unique nonce." });
-  }
-
   // Sign the message
   try {
     const signer = new ethers.Wallet(process.env.SIGNER_PRIVATE_KEY);
@@ -131,9 +116,6 @@ app.post("/sign-visit", async (req, res) => {
 
     // Sign the hash (adds Ethereum prefix internally)
     const signature = await signer.signMessage(ethers.getBytes(messageHash));
-
-    // Mark nonce as used
-    nonceSet.add(nonce);
 
     return res.json({ signature });
   } catch (err) {
